@@ -37,9 +37,8 @@ public class RSSFeeder extends Feeder {
 	@Override
 	public boolean init() {
 		try {
-			if (this.properties.get("URL") == null || this.logURI == null)
+			if (this.properties.get("URL") == null)
 				throw new Exception("Incorrect Initialization Parameters!");
-
 			LoggerContext context = (org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false);
 			File file = new File(this.logURI);
 			if (!file.exists())
