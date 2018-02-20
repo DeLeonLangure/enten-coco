@@ -15,7 +15,7 @@ public class RSSFeederTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		properties.put("URL", "http://www.eluniversal.com.mx/rss.xml");
-		logURI = "/Users/Alex/javas/coco/coco/global-resources/log4j.xml";
+		logURI = "/Users/Alex/javas/coco/coco/Enten-Coco/global-resources/log4j.xml";
 		r = new RSSFeeder(properties, logURI);
 	}
 
@@ -24,10 +24,12 @@ public class RSSFeederTest extends TestCase {
 	}
 
 	public void testInit() {
+		r = new RSSFeeder(properties, logURI);
 		assert (r.init());
 	}
 	
 	public void testExecute() {
+		r = new RSSFeeder(properties, logURI);
 		r.init();
 		assert(r.execute());
 		assert(!r.getFeedItems().isEmpty());
