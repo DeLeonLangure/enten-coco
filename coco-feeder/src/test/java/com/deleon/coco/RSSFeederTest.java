@@ -9,14 +9,14 @@ import junit.framework.TestCase;
 public class RSSFeederTest extends TestCase {
 
 	HashMap<String, String> properties = new HashMap<String, String>();
-	String logURI;
+	//String logURI;
 	RSSFeeder r;
 
 	protected void setUp() throws Exception {
 		super.setUp();
 		properties.put("URL", "http://www.eluniversal.com.mx/rss.xml");
-		logURI = "D:/javas/git/Enten-Coco/global-resources/log4j.xml";
-		r = new RSSFeeder(properties, logURI);
+		properties.put("logConfigFileURI", "/Users/Alex/javas/coco/coco/Enten-Coco/global-resources/log4j.xml");
+		r = new RSSFeeder(properties);
 	}
 
 	protected void tearDown() throws Exception {

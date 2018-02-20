@@ -6,7 +6,7 @@ public abstract class Feeder {
 
 	protected HashMap<String, String> properties = new HashMap<String, String>();
 	protected int type;
-	protected String logURI;
+	protected String logConfigFileURI;
 	
 	public abstract boolean init();
 	public abstract boolean execute();

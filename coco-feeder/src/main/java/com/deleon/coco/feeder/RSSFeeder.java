@@ -23,14 +23,14 @@ import com.sun.syndication.io.XmlReader;
 public class RSSFeeder extends Feeder {
 
 	private static final Logger logger = LogManager.getLogger(RSSFeeder.class);
+	
 
 	protected String url;
 	// protected Feed feed;
 	protected ArrayList<FeedItem> feedItems;
 
-	public RSSFeeder(HashMap<String, String> properties, String logURI) {
+	public RSSFeeder(HashMap<String, String> properties) {
 		this.properties = properties;
-		this.logURI = logURI;
 		this.feedItems = new ArrayList<FeedItem>();
 	}
 
@@ -38,19 +38,23 @@ public class RSSFeeder extends Feeder {
 	public boolean init() {
 		try {
 			if (this.properties.get("URL") == null)
-				throw new Exception("Incorrect Initialization Parameters!");
-			LoggerContext context = (org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false);
-			File file = new File(this.logURI);
-			if (!file.exists())
-				throw new Exception("Logger Configuration File does not exist: " + file.toURI());
-			context.setConfigLocation(file.toURI());
+				throw new Exception("No URL for Feeder was provided");
+			if (this.properties.get("logConfigFileURI") == null)
+				throw new Exception("No URI for logger config file was provided");			
+			
+			this.logConfigFileURI = properties.get("logConfigFileURI");
 			this.url = properties.get("URL");
+			
+			LoggerContext context = (org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false);
+			File file = new File(this.logConfigFileURI);
+			context.setConfigLocation(file.toURI());
+			System.out.println("Logger initializated ok");
 			logger.debug("Logger initializated ok");
 		} // try
 		catch (Exception e) {
 			System.out.println(e.getMessage());
 			return false;
-		}
+		} // exception
 		return true;
 	}// init
 
@@ -60,24 +64,25 @@ public class RSSFeeder extends Feeder {
 		logger.debug("Entering RSSFeeder for: " + url);
 		try {
 			URL url = new URL(this.url);
-			
+
 			HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
-			httpcon.addRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0");
+			httpcon.addRequestProperty("User-Agent",
+					"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0");
 
 			SyndFeedInput input = new SyndFeedInput();
 			SyndFeed feed = input.build(new XmlReader(httpcon));
 			List entries = feed.getEntries();
 			Iterator itEntries = entries.iterator();
 			FeedItem feedItem = new FeedItem();
-			 while (itEntries.hasNext()) {
-		            SyndEntry entry = (SyndEntry) itEntries.next();
-		            feedItem.setHtmlDescription(entry.getDescription().getValue());
-		            feedItem.setPlainDescription(entry.getDescription().getValue());
-		            feedItem.setTitle(entry.getTitle());
-		            feedItem.setLink(entry.getLink());
-		            feedItem.setPublicationDate(entry.getPublishedDate());
-		            this.feedItems.add(feedItem);
-		        }
+			while (itEntries.hasNext()) {
+				SyndEntry entry = (SyndEntry) itEntries.next();
+				feedItem.setHtmlDescription(entry.getDescription().getValue());
+				feedItem.setPlainDescription(entry.getDescription().getValue());
+				feedItem.setTitle(entry.getTitle());
+				feedItem.setLink(entry.getLink());
+				feedItem.setPublicationDate(entry.getPublishedDate());
+				this.feedItems.add(feedItem);
+			}
 		} catch (MalformedURLException e) {
 			logger.error("Error with the URL Provided: " + this.url, e);
 			return false;
